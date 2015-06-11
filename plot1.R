@@ -1,48 +1,40 @@
-
+#
+# This program is part of the Exploratory Data Analysis Assignment #1
+#
+# It shows aggregate US Emission Trends
+#
+# Read in the data for emissions and classifications
+# This program assumes the data is in a subdirectory named "data/"
+#
+rm(list=ls())
+#
 emissionFile <- "data/SummarySCC_PM25.rds"
 sourceClassFile <- "data/Source_Classification_Code.rds"
-
+#
 emission <- readRDS(emissionFile)
 sourceClass <- readRDS(sourceClassFile)
-
-result <- data.frame()
-years <- unique(emission$year)
-for (i in years){
-    x <- subset(emission, i == emission$year)
-    se <- sum(x$Emission)
-    result <- rbind(result, data.frame(year=i, emission=se))
+#
+###############################################################################################
+#
+# Aggregate the data by year to see what the emission trend has been
+#
+#
+# This loop will subset() by year and sum emissions then save (year, emission) into result
+#
+years <- unique(emission$year)            # what years are included in the data
+result <- data.frame()                    # initialize the output data frame
+for (i in years){                         # loop over each year
+    year_subset <- subset(emission, i == emission$year)
+    t_sum <- sum(year_subset$Emission)
+    result <- rbind(result, data.frame(year=i, emission=t_sum))
 }
-
-plot(result$emission ~ result$year, type="b", xlab="Year", ylab="Emission")
-
 #
-# Baltimore
+# Plot the result
 #
-Baltimore <- "24510"
-
-baltEmission <- subset(emission, emission$fips == Baltimore)
-
-baltResult <- data.frame()
-years <- unique(baltEmission$year)
-for (i in years){
-  x <- subset(baltEmission, i == baltEmission$year)
-  se <- sum(x$Emission)
-  baltResult <- rbind(baltResult, data.frame(year=i, emission=se))
-}
-
-plot(baltResult$emission ~ baltResult$year, xlab="Year", ylab="Baltimore Emission", type="b")
-
-
+plot(result$emission ~ result$year, type="b", xlab="Year", ylab="Emission",main="Aggregate US Emission Trend")
 #
-# Coal Sources
+# Save the graph
 #
-
-sum(grepl("Coal", q_u, ignore.case=TRUE))
-
-
-"Ext Comb"
-"In-Process Fuel Use"
-"Stationary Fuel Comb"
-
-
+dev.copy(png, file="plot1.png")
+dev.off()
 
